@@ -1,11 +1,5 @@
--- init.lua
--- Kickstart.nvim configuration (improved)
-
--- Set <space> as the leader key before loading any plugins
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-
--- Basic indentation options
 vim.opt.autoindent = true
 vim.opt.smartindent = true
 vim.opt.cindent = true
