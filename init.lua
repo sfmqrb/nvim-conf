@@ -87,7 +87,19 @@ require("lazy").setup({
         "hrsh7th/nvim-cmp",
     },
     -- Telescope and extensions
-    { "nvim-telescope/telescope.nvim", version = "*", dependencies = { "nvim-lua/plenary.nvim" } },
+    -- { "nvim-telescope/telescope.nvim", version = "*", dependencies = { "nvim-lua/plenary.nvim" } },
+    {
+      "nvim-telescope/telescope.nvim",
+      version = "*",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      config = function()
+        require("telescope").setup {
+          defaults = {
+            path_display = { "tail" },
+          }
+        }
+      end,
+    },
     {
         "nvim-telescope/telescope-fzf-native.nvim",
         build = "make",
@@ -249,6 +261,23 @@ local servers = {
             },
         },
     },
+    gopls = {
+        cmd = { "gopls" },
+        filetypes = { "go", "gomod", "gowork", "gotmpl" },
+        root_dir = require("lspconfig").util.root_pattern("go.work", "go.mod", ".git"),
+        settings = {
+            gopls = {
+                completeUnimported = true,
+                usePlaceholders = true,
+                analyses = {
+                    unusedparams = true,
+                    shadow = true,
+                },
+                staticcheck = true,
+            },
+        },
+    },
+
 }
 
 require("neodev").setup()
@@ -258,7 +287,7 @@ capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 require("mason").setup()
 
 require("mason-lspconfig").setup({
-    ensure_installed = { "clangd", "lua_ls", "rust_analyzer" },
+    ensure_installed = { "clangd", "lua_ls", "rust_analyzer", "gopls", "pyright" },
 })
 
 require("mason-lspconfig").setup_handlers({
