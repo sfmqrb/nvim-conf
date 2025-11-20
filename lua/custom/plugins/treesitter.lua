@@ -36,9 +36,10 @@ return {
             auto_install = true,
             highlight = { enable = true },
             indent = { enable = true },
+            fold = { enable = true },
         })
 
-        -- Only the folding fix (minimal changes)
+        -- Folding settings
         vim.o.foldmethod = "expr"
         vim.o.foldexpr = "nvim_treesitter#foldexpr()"
         vim.o.foldlevel = 99
