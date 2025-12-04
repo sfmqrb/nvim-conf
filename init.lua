@@ -130,11 +130,6 @@ require("lazy").setup({
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
-
--- Setup nvim-tree and keymap for toggling it
-require("nvim-tree").setup()
-vim.keymap.set("n", "<leader>u", ":NvimTreeToggle<CR>")
-
 -- [[ Global Options ]]
 vim.o.hlsearch = true
 vim.wo.number = true
