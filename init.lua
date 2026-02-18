@@ -31,6 +31,9 @@ require("lazy").setup({
     "tpope/vim-rhubarb",
     "rstacruz/vim-closer",
     {
+        "mfussenegger/nvim-jdtls",
+    },
+    {
         "dasupradyumna/midnight.nvim",
         lazy = false,
         priority = 1000,
@@ -130,11 +133,6 @@ require("lazy").setup({
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
-
--- Setup nvim-tree and keymap for toggling it
-require("nvim-tree").setup()
-vim.keymap.set("n", "<leader>u", ":NvimTreeToggle<CR>")
-
 -- [[ Global Options ]]
 vim.o.hlsearch = true
 vim.wo.number = true
@@ -298,3 +296,38 @@ require("mason-lspconfig").setup_handlers({
         }))
     end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "java",
+    callback = function()
+        local jdtls = require("jdtls")
+
+        local home = vim.fn.expand("~")
+        local jdtls_root = home .. "/.local/share/jdtls"
+        local config_dir = jdtls_root .. "/config_linux"
+
+        local project_root = jdtls.setup.find_root({
+            ".git", "mvnw", "gradlew", "pom.xml", "build.gradle"
+        })
+        if not project_root then
+            vim.notify("jdtls: no project root found", vim.log.levels.WARN)
+            return
+        end
+
+        local workspace_dir =
+            home .. "/.local/share/jdtls/workspace/" ..
+            vim.fn.fnamemodify(project_root, ":p:h:t")
+
+        jdtls.start_or_attach({
+            cmd = {
+                jdtls_root .. "/bin/jdtls",
+                "-configuration", config_dir,
+                "-data", workspace_dir,
+                "--jvm-arg=-Xmx2G",
+            },
+            root_dir = project_root,
+            capabilities = require("cmp_nvim_lsp").default_capabilities(),
+        })
+    end,
+})
+
