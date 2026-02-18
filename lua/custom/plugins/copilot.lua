@@ -6,9 +6,9 @@ return {
         require("copilot").setup({
             suggestion = {
                 enabled = true,
-                auto_trigger = true, -- Enable suggestions without explicit trigger
+                auto_trigger = true,
                 keymap = {
-                    accept = "<C-l>", -- Accept Copilot suggestions
+                    accept = "<C-l>",
                     accept_word = false,
                     accept_line = false,
                     next = "<M-]>",
@@ -17,7 +17,12 @@ return {
                 },
             },
             filetypes = {
-                text = false, -- disable for .txt files
+                json = false,
+                yaml = false,
+                yml = false,
+                text = false,
+                [""] = false,       -- no filetype detected
+                ["conf"] = false,   -- optional: some no-extension configs
             },
         })
     end,
