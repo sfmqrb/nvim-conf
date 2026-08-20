@@ -4,8 +4,20 @@ return {
     config = function()
         local configs = require("nvim-treesitter.configs")
 
+        -- norg_meta is not in nvim-treesitter's registry; neorg needs it (norg is in the registry)
+        local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+        parser_config.norg_meta = {
+            install_info = {
+                url = "https://github.com/nvim-neorg/tree-sitter-norg-meta",
+                files = { "src/parser.c" },
+                branch = "main",
+            },
+        }
+
         configs.setup({
             ensure_installed = {
+                "norg",
+                "norg_meta",
                 "c",
                 "lua",
                 "vim",
@@ -34,7 +46,11 @@ return {
             },
             sync_install = false,
             auto_install = true,
-            highlight = { enable = true },
+            ignore_install = { "latex" }, -- needs tree-sitter CLI; vimtex highlights tex instead
+            highlight = {
+                enable = true,
+                disable = { "latex" }, -- vimtex's own syntax highlighting is better for tex
+            },
             indent = { enable = true },
             fold = { enable = true },
         })

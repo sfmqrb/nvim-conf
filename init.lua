@@ -194,6 +194,12 @@ vim.keymap.set("n", "<leader>sl", function()
     vim.cmd('echo expand("%:p")')
 end, { desc = "[S]earch [L]ocation" })
 
+-- Show diagnostics (errors/warnings) inline at the end of the offending line
+vim.diagnostic.config({
+    virtual_text = true,
+    severity_sort = true,
+})
+
 -- [[ LSP Configuration ]]
 local on_attach = function(client, bufnr)
     local nmap = function(keys, func, desc)
@@ -225,30 +231,29 @@ local servers = {
     clangd = {
         cmd = { "clangd", "--background-index" },
         filetypes = { "c", "cpp", "objc", "objcpp" },
-        root_dir = require("lspconfig").util.root_pattern("compile_commands.json", "compile_flags.txt", ".git"),
         settings = { clangd = { includePath = { "/usr/include", "/usr/local/include" } } },
     },
     lua_ls = {
-        Lua = {
-            workspace = { checkThirdParty = false },
-            telemetry = { enable = false },
+        settings = {
+            Lua = {
+                workspace = { checkThirdParty = false },
+                telemetry = { enable = false },
+            },
         },
     },
     rust_analyzer = {
-        ["rust-analyzer"] = {
-            cargo = {
-                allFeatures = true,
-            },
-            checkOnSave = {
-                command = "clippy",
+        settings = {
+            ["rust-analyzer"] = {
+                cargo = {
+                    allFeatures = true,
+                },
+                checkOnSave = {
+                    command = "clippy",
+                },
             },
         },
     },
     pyright = {
-        root_dir = function(fname)
-            return require("lspconfig.util").root_pattern("pyproject.toml", "setup.py", "setup.cfg", ".git")(fname)
-                or vim.fn.expand("%:p:h") -- fallback to current file's directory
-        end,
         settings = {
             python = {
                 analysis = {
@@ -259,10 +264,17 @@ local servers = {
             },
         },
     },
+    texlab = {
+        settings = {
+            texlab = {
+                build = { onSave = false }, -- vimtex handles compilation
+                chktex = { onOpenAndSave = true },
+            },
+        },
+    },
     gopls = {
         cmd = { "gopls" },
         filetypes = { "go", "gomod", "gowork", "gotmpl" },
-        root_dir = require("lspconfig").util.root_pattern("go.work", "go.mod", ".git"),
         settings = {
             gopls = {
                 completeUnimported = true,
@@ -284,17 +296,16 @@ capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
 require("mason").setup()
 
-require("mason-lspconfig").setup({
-    ensure_installed = { "clangd", "lua_ls", "rust_analyzer", "gopls", "pyright" },
-})
+-- Register per-server config (mason-lspconfig v2 auto-enables installed servers)
+for server_name, config in pairs(servers) do
+    vim.lsp.config(server_name, vim.tbl_deep_extend("force", config, {
+        capabilities = capabilities,
+        on_attach = on_attach,
+    }))
+end
 
-require("mason-lspconfig").setup_handlers({
-    function(server_name)
-        require("lspconfig")[server_name].setup(vim.tbl_deep_extend("force", servers[server_name] or {}, {
-            capabilities = capabilities,
-            on_attach = on_attach,
-        }))
-    end,
+require("mason-lspconfig").setup({
+    ensure_installed = { "clangd", "lua_ls", "rust_analyzer", "gopls", "pyright", "texlab" },
 })
 
 vim.api.nvim_create_autocmd("FileType", {

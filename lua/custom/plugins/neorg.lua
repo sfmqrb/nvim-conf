@@ -5,6 +5,7 @@ return {
     dependencies = {
         "nvim-lua/plenary.nvim", -- Required by Neorg
         "hrsh7th/nvim-cmp", -- Required for nvim-cmp integration
+        "nvim-treesitter/nvim-treesitter", -- Must load first so neorg finds the norg parsers
     },
     config = function()
         require("neorg").setup({

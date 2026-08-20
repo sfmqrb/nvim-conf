@@ -17,6 +17,9 @@ return {
                 },
             },
             filetypes = {
+                tex = false,      -- no copilot in LaTeX
+                plaintex = false,
+                bib = false,
                 json = false,
                 yaml = false,
                 yml = false,

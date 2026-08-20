@@ -19,8 +19,9 @@ return {
         -- your exact request: toggle with <leader>u
         vim.keymap.set("n", "<leader>u", ":NvimTreeToggle<CR>")
 
-        -- reveal current file and expand folders with <leader>e  (added)
-        vim.keymap.set("n", "<leader>e", function()
+        -- reveal current file and expand folders with <leader>o
+        -- (<leader>e now shows warnings/errors for the current line, see mappings.lua)
+        vim.keymap.set("n", "<leader>o", function()
             require("nvim-tree.api").tree.open()
             require("nvim-tree.api").tree.find_file({ open = true })
         end)
