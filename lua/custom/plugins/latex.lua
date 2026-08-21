@@ -11,8 +11,26 @@ return {
         vim.g.vimtex_view_method = "general"
         vim.g.vimtex_view_general_viewer = "evince"
 
+        -- Use the user-local TeX Live 2025 (matches Overleaf's TeX Live 2025 image)
+        -- instead of the system TeX Live 2022. Installed under ~/texlive/2025.
+        local tl2025 = vim.fn.expand("~/texlive/2025/bin/x86_64-linux")
+        if vim.fn.isdirectory(tl2025) == 1 then
+            vim.env.PATH = tl2025 .. ":" .. vim.env.PATH
+        end
+
         -- Compile with latexmk (continuous mode: recompiles on every save)
         vim.g.vimtex_compiler_method = "latexmk"
+
+        -- Overleaf compiles with shell-escape enabled (needed by e.g. the svg package)
+        vim.g.vimtex_compiler_latexmk = {
+            options = {
+                "-shell-escape",
+                "-verbose",
+                "-file-line-error",
+                "-synctex=1",
+                "-interaction=nonstopmode",
+            },
+        }
 
         -- Auto-open quickfix on compile errors (but not on warnings, and don't steal focus)
         vim.g.vimtex_quickfix_mode = 2
