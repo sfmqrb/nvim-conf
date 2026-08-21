@@ -148,16 +148,17 @@ vim.o.updatetime = 250
 vim.o.timeout = true
 vim.o.timeoutlen = 300
 vim.o.completeopt = "menuone,noselect"
-vim.opt.diffopt:append("linematch:60") -- smarter line alignment in diff mode
-vim.opt.diffopt:append("followwrap") -- keep line wrapping on in diff mode (long lines wrap instead of running off-screen)
-vim.opt.diffopt:append("algorithm:histogram") -- better hunk splitting for code
+-- Set explicitly rather than append: this nvim's default diffopt already has
+-- linematch:40, and a duplicate linematch entry silently disables word-level
+-- DiffText highlighting. followwrap keeps long lines wrapping in diff mode.
+vim.o.diffopt = "internal,filler,closeoff,linematch:60,followwrap,algorithm:histogram"
 
 -- GitHub-style diff colors: green for added/changed, red for removed,
 -- with the actually-changed text in a brighter green (DiffText)
 local function github_diff_colors()
     vim.api.nvim_set_hl(0, "DiffAdd", { bg = "#12261e" })
     vim.api.nvim_set_hl(0, "DiffChange", { bg = "#12261e" })
-    vim.api.nvim_set_hl(0, "DiffText", { bg = "#1a4a29", bold = true })
+    vim.api.nvim_set_hl(0, "DiffText", { bg = "#1d572d", bold = true })
     vim.api.nvim_set_hl(0, "DiffDelete", { bg = "#301b1f", fg = "#6e4a52" })
 end
 github_diff_colors()
