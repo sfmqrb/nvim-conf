@@ -207,18 +207,6 @@ for server_name, config in pairs(servers) do
     vim.lsp.config(server_name, config)
 end
 
--- lspconfig passes nested marker tables to vim.fs.root based on a
--- has('nvim-0.11.3') check, which this 0.12.0-dev build passes without actually
--- supporting them ("invalid value (table) ... in 'concat'"). Flatten them here;
--- drop this shim once nvim is rebuilt from a newer commit.
-local fs_root = vim.fs.root
-vim.fs.root = function(source, marker)
-    if type(marker) == "table" then
-        marker = vim.iter(marker):flatten():totable()
-    end
-    return fs_root(source, marker)
-end
-
 -- Auto-enabled clients don't get a per-server on_attach; LspAttach covers every client.
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(args)
