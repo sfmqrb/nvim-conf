@@ -319,6 +319,25 @@ for server_name, config in pairs(servers) do
     }))
 end
 
+-- lspconfig's biome root_dir passes nested marker tables to vim.fs.root based on
+-- a has('nvim-0.11.3') check, which this 0.12.0-dev build passes without actually
+-- supporting nested markers ("invalid value (table) ... in 'concat'"). Flat-marker
+-- replacement; drop once nvim is rebuilt from a newer commit.
+vim.lsp.config("biome", {
+    capabilities = capabilities,
+    root_dir = function(bufnr, on_dir)
+        local config_dir = vim.fs.root(bufnr, { "biome.json", "biome.jsonc" })
+        if not config_dir then
+            return -- only attach in projects that actually use biome
+        end
+        local project_root = vim.fs.root(bufnr, {
+            "package-lock.json", "yarn.lock", "pnpm-lock.yaml",
+            "bun.lockb", "bun.lock", "deno.lock",
+        })
+        on_dir(project_root or config_dir)
+    end,
+})
+
 -- The auto-enable path can start clients without calling the on_attach injected
 -- above, leaving buffers with no LSP mappings; LspAttach fires for every client.
 vim.api.nvim_create_autocmd("LspAttach", {
