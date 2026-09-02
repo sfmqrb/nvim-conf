@@ -319,6 +319,17 @@ for server_name, config in pairs(servers) do
     }))
 end
 
+-- The auto-enable path can start clients without calling the on_attach injected
+-- above, leaving buffers with no LSP mappings; LspAttach fires for every client.
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if client then
+            on_attach(client, args.buf)
+        end
+    end,
+})
+
 require("mason-lspconfig").setup({
     ensure_installed = { "clangd", "lua_ls", "rust_analyzer", "gopls", "pyright", "texlab" },
 })
