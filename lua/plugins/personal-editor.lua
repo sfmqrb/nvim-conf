@@ -38,6 +38,14 @@ return {
     lazy = false,
     version = "*",
     dependencies = { "nvim-lua/plenary.nvim", "nvim-treesitter/nvim-treesitter" },
+    init = function()
+      -- neorg's rockspec builds norg/norg_meta via luarocks into lazy-rocks/,
+      -- but lazy.nvim doesn't put that parser/ dir on the runtimepath, so
+      -- treesitter never finds them. Add it here.
+      local rocks = vim.fn.stdpath("data") .. "/lazy-rocks/"
+      vim.opt.runtimepath:append(rocks .. "tree-sitter-norg/lib/lua/5.1")
+      vim.opt.runtimepath:append(rocks .. "tree-sitter-norg-meta/lib/lua/5.1")
+    end,
     opts = {
       load = {
         ["core.defaults"] = {},
