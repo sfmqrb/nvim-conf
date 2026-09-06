@@ -42,9 +42,9 @@ return {
       load = {
         ["core.defaults"] = {},
         ["core.concealer"] = {},
-        ["core.completion"] = { config = { engine = { module_name = "external.lsp-completion" } } },
-        ["core.integrations.lsp-completion"] = {},
         ["core.dirman"] = { config = { workspaces = { notes = "~/.notes" } } },
+        -- core.completion dropped: it needs nvim-cmp, and this config uses
+        -- blink.cmp. Re-add with a blink engine if neorg ships one.
       },
     },
   },
