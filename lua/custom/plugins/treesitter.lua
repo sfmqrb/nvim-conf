@@ -6,8 +6,7 @@ return {
     build = ":TSUpdate",
     lazy = false,
     config = function()
-        -- norg/norg_meta are not in main's registry; their compiled parsers live
-        -- in stdpath('data')/site/parser and neorg ships their queries.
+        -- norg/norg_meta are built by the neorg spec (see neorg.lua).
         require("nvim-treesitter").install({
             "c",
             "lua",
